@@ -178,7 +178,7 @@
   .om-row:last-child { border-bottom: none; }
   .om-k { flex: 0 0 68px; text-align: center; font-weight: 700; font-size: 14px; color: #4b5563; background: #eceef2; border-radius: 8px; padding: 4px 0; }
   .om-v { flex: 1; font-size: 16px; line-height: 1.5; font-weight: 700; }
-  .om-v.judge-feel { color: #cc6600; }
+  #clothesTitle .judge-feel { color: #cc6600; margin-left: 8px; }
   .advice { border-radius: 12px; padding: 9px 12px; font-size: 15px; line-height: 1.5; margin-top: 8px; }
   .advice.rain { background: #eaf3ff; }
   .advice.ok { background: #eefbf0; }
@@ -293,7 +293,7 @@
   body.dark .cell .k { color: #aeaeb2; }
   body.dark .om-row { border-bottom-color: #38383a; }
   body.dark .om-k { color: #d1d1d6; background: #2c2c2e; }
-  body.dark .om-v.judge-feel { color: #ff9f0a; }
+  body.dark #clothesTitle .judge-feel { color: #ff9f0a; }
   body.dark .advice.rain { background: #12283f; }
   body.dark .advice.ok { background: #14301c; }
   body.dark .advice.warn { background: #33291a; }
@@ -1841,8 +1841,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       if (np) { avg = periodFeelsAvg(lastData.hourly, dayDate, np.from, np.to, m.MAXT, sun); wAvg = periodWindAvg(lastData.hourly, dayDate, np.from, np.to); basisLbl = '夜間'; }
     }
     const o = workOutfitFor(judgeTemp(avg, wAvg));
+    $('clothesTitle').innerHTML = `👕 ${DAY_LABEL[currentDay]}の服装<span class="judge-feel">${basisLbl} ${avg != null ? `${avg}℃` : '--℃'}</span>`;
     $('clothesBands').innerHTML =
-      `<div class="om-row"><span class="om-k">判定基準</span><span class="om-v judge-feel">${basisLbl} ${avg != null ? `${avg}℃` : '--℃'}</span></div>` +
       `<div class="om-row"><span class="om-k">トップス</span><span class="om-v">${o.tops}</span></div>` +
       `<div class="om-row"><span class="om-k">ボトムス</span><span class="om-v">${o.bottoms}</span></div>`;
     const feels = [
