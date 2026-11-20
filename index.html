@@ -2139,12 +2139,15 @@ if ('serviceWorker' in navigator) {
   var card = document.getElementById('wxCard');
   var tabs = [document.getElementById('tabToday'), document.getElementById('tabTomorrow'), document.getElementById('tabDayAfter')];
   if (!card || tabs.some(function (t) { return !t; })) return;
-  var sx = 0, sy = 0;
+  var sx = 0, sy = 0, inStrip = false;
   card.addEventListener('touchstart', function (e) {
     var t = e.changedTouches[0];
     sx = t.clientX; sy = t.clientY;
+    // 1時間スライドの上での横スクロールでは日を切り替えない
+    inStrip = !!(e.target && e.target.closest && e.target.closest('.hwrap'));
   }, { passive: true });
   card.addEventListener('touchend', function (e) {
+    if (inStrip) { inStrip = false; return; }
     var t = e.changedTouches[0];
     var dx = t.clientX - sx, dy = t.clientY - sy;
     if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
