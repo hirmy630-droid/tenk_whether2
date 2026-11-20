@@ -1797,9 +1797,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     requestAnimationFrame(fitFirstScreen);
   }
 
-  // レーダー／更新／週間予報の行が起動時の1画面に収まるよう、画面の高さに合わせて段階的に詰める（5.4インチ等の小さい画面ほど強く詰める）
+  // 最終取得の行まで起動時の1画面に収まるよう、画面の高さに合わせて段階的に詰める（5.4インチ等の小さい画面ほど強く詰める）
   function fitFirstScreen() {
-    const row = document.querySelector('.btn-row3');
+    const row = $('fetchStatus') || document.querySelector('.btn-row3');
     if (!row) return;
     const body = document.body;
     body.classList.remove('fit1', 'fit2', 'fit3');
