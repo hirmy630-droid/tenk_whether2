@@ -172,6 +172,7 @@
   table.mini td.day-sep { background: rgba(120,120,128,.14); font-weight: 700; text-align: left; padding-left: 8px; }
   #hourlyModal table.mini th { font-size: 17px; }
   #hourlyModal table.mini td { font-size: 18px; }
+  #hourlyModal table.mini tr.past td { opacity: .45; }
   table.mini td.fl { color: #ff9500; }
   table.mini td.rn { color: #007aff; }
   table.mini td.rz { color: #6b7280; }
@@ -1917,38 +1918,33 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 
   // 1時間毎ポップアップ
   // 横スクロールの1時間天気（v2でセルの代わりにカード内へ常設、左端に固定ラベル付き）
-  // 今日は今日0時〜明後日の終わりまでをスクロールで見られるようにする（過ぎた時間は薄く表示）
+  // どのタブでも今日0時〜明後日の終わりまでを通して表示し、開いているタブの位置へスクロールする。
+  // 過ぎた時間は薄く表示。スクロールで日をまたいだら、予報タブも連動して切り替わる（init側のscroll監視）。
   function renderHourlyStrip() {
     const el = $('hourlyStrip');
     if (!el || !lastData) return;
     const offset = DAY_OFFSET[currentDay] ?? 0;
-    const e = dayEntry(offset);
+    const e = dayEntry(0) || dayEntry(offset);
     if (!e) { el.innerHTML = ''; return; }
     const dayDate = dateOfEntry(e);
     const entryFor = (d) => {
       for (const o of [0, 1, 2]) { const en = dayEntry(o); if (en && sameDay(dateOfEntry(en), d)) return en; }
       return e;
     };
-    let rows;
-    let curMs = null;
-    if (offset === 0) {
-      const startMs = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate()).getTime();
-      const endMs = startMs + 3 * 86400000;
-      rows = (lastData.hourly || []).filter(r => {
-        const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
-        return ms >= startMs && ms < endMs;
-      }).sort((a, b) => (a.date - b.date) || (a.time - b.time));
-      const nh = jstNow().getUTCHours();
-      curMs = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), nh).getTime();
-    } else {
-      rows = (lastData.hourly || []).filter(r => sameDay(r.date, dayDate));
-    }
+    const startMs = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate()).getTime();
+    const endMs = startMs + 3 * 86400000;
+    const rows = (lastData.hourly || []).filter(r => {
+      const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
+      return ms >= startMs && ms < endMs;
+    }).sort((a, b) => (a.date - b.date) || (a.time - b.time));
+    const nh = jstNow().getUTCHours();
+    const curMs = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), nh).getTime();
     let html = '';
     let prevDay = null;
     let first = true;
     rows.forEach(r => {
+      const diff = Math.round((new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate()) - new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate())) / 86400000);
       if (prevDay && !sameDay(r.date, prevDay)) {
-        const diff = Math.round((new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate()) - new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate())) / 86400000);
         const nm = diff === 1 ? '明日' : diff === 2 ? '明後日' : '';
         html += `<div class="hcol hday">${nm ? nm + '<br>' : ''}${r.date.getMonth() + 1}/${r.date.getDate()}</div>`;
         first = false;
@@ -1960,31 +1956,35 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const rv = r.rainMm;
       const rCls = rv != null && (rv >= 1 || (pop != null && pop >= 40 && prc != null && prc >= 0.3)) ? 'rn' : 'rz';
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
-      const cur = curMs !== null && ms === curMs ? ' data-cur="1"' : '';
-      const past = curMs !== null && ms < curMs ? ' past' : '';
-      html += `<div class="hcol${first ? ' first' : ''}${past}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr hr-hp">${pop != null ? `${pop}%` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div></div>`;
+      const cur = ms === curMs ? ' data-cur="1"' : '';
+      const past = ms < curMs ? ' past' : '';
+      html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr hr-hp">${pop != null ? `${pop}%` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div></div>`;
       first = false;
     });
     el.innerHTML = html || '<p class="note">1時間予報を取得できませんでした。</p>';
-    const curEl = el.querySelector('[data-cur="1"]');
-    el.scrollLeft = curEl ? curEl.offsetLeft : 0;
+    const target = offset === 0 ? el.querySelector('[data-cur="1"]') : el.querySelector(`.hcol[data-day="${offset}"]`);
+    el.scrollLeft = target ? target.offsetLeft : 0;
   }
 
   function openHourly() {
     const offset = DAY_OFFSET[currentDay] ?? 0;
     const e = dayEntry(offset);
     if (!e || !lastData) return;
-    const dayDate = dateOfEntry(e);
-    let rows = (lastData.hourly || []).filter(r => sameDay(r.date, dayDate));
-    // 今日は「今の時間から24時間」を表示する（日付をまたぐ場合は明日の行も含む）
-    if (offset === 0) {
-      const nh = jstNow().getUTCHours();
-      const startMs = new Date(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate(), nh).getTime();
-      rows = (lastData.hourly || []).filter(r => {
-        const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
-        return ms >= startMs && ms < startMs + 24 * 3600000;
-      }).sort((a, b) => (a.date - b.date) || (a.time - b.time));
-    }
+    // スライドと同じ時間表示：今日0時〜明後日の終わりまでを通し、過ぎた時間は薄く表示する
+    const e0 = dayEntry(0) || e;
+    const baseDate = dateOfEntry(e0);
+    const entryFor = (d) => {
+      for (const o of [0, 1, 2]) { const en = dayEntry(o); if (en && sameDay(dateOfEntry(en), d)) return en; }
+      return e;
+    };
+    const startMs = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate()).getTime();
+    const endMs = startMs + 3 * 86400000;
+    const rows = (lastData.hourly || []).filter(r => {
+      const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
+      return ms >= startMs && ms < endMs;
+    }).sort((a, b) => (a.date - b.date) || (a.time - b.time));
+    const nh = jstNow().getUTCHours();
+    const curMs = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), nh).getTime();
     const d = dateFromMrfTm(e.mrf.tm);
     const dayName = `${d.mo}月${d.d}日（${d.dow}）・${DAY_LABEL[currentDay]}`;
     $('hourlyTitle').innerHTML = `🕐 1時間毎の予報<span class="h-sub2">${dayName}</span>`;
@@ -1996,21 +1996,32 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     let html = '<table class="mini"><tr><th>時</th><th>天気</th><th>気温</th><th>体感</th><th>風速</th><th>雨量</th></tr>';
     let prevDay = null;
     rows.forEach(r => {
-      if (prevDay && !sameDay(r.date, prevDay)) { const dl = `${r.date.getMonth() + 1}月${r.date.getDate()}日（${'日月火水木金土'[r.date.getDay()]}）`; html += `<tr><td colspan="6" class="day-sep">明日 ${dl}</td></tr>`; }
+      const diff = Math.round((new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate()) - new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate())) / 86400000);
+      if (prevDay && !sameDay(r.date, prevDay)) { const dl = `${r.date.getMonth() + 1}月${r.date.getDate()}日（${'日月火水木金土'[r.date.getDay()]}）`; const nm = diff === 1 ? '明日 ' : diff === 2 ? '明後日 ' : ''; html += `<tr><td colspan="6" class="day-sep">${nm}${dl}</td></tr>`; }
       prevDay = r.date;
-      const fl = r.temp != null ? feelsLike(r.temp, r.windSpd, r.wx, r.time, sunRange(e.mrf), r.hum) : null;
+      const fl = r.temp != null ? feelsLike(r.temp, r.windSpd, r.wx, r.time, sunRange(entryFor(r.date).mrf), r.hum) : null;
       const rv = r.rainMm;
       const pop = lastData.popMap ? lastData.popMap[omKey(r.date, r.time)] : null;
       const prc = lastData.precipMap ? lastData.precipMap[omKey(r.date, r.time)] : null;
       const rCls = rv != null && (rv >= 1 || (pop != null && pop >= 40 && prc != null && prc >= 0.3)) ? 'rn' : 'rz';
       const wI = r.windImg && r.windSpd > 0 ? `<img class="wicon-t" src="https://gvs.weathernews.jp/onebox/img/wind/png/${r.windImg}" alt="" onerror="this.remove()">` : '';
-      html += `<tr><td>${r.time}時</td><td>${wxEmoji(r.wx)}</td><td>${r.temp ?? '--'}</td><td class="fl">${fl ?? '--'}</td><td>${wI}${r.windSpd != null ? `${r.windSpd}m` : '--'}</td><td class="${rCls}">${rv != null ? `${rv}㎜` : '―'}</td></tr>`;
+      const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
+      const cls = ms < curMs ? ' class="past"' : '';
+      const cur = ms === curMs ? ' data-cur="1"' : '';
+      html += `<tr data-day="${diff}"${cls}${cur}><td>${r.time}時</td><td>${wxEmoji(r.wx)}</td><td>${r.temp ?? '--'}</td><td class="fl">${fl ?? '--'}</td><td>${wI}${r.windSpd != null ? `${r.windSpd}m` : '--'}</td><td class="${rCls}">${rv != null ? `${rv}㎜` : '―'}</td></tr>`;
     });
     html += '</table>';
     $('hourlyBody').innerHTML = html;
     openModal('hourlyModal');
+    // 開いているタブの先頭（今日は現在時刻）までスクロールする
+    const body = $('hourlyBody');
+    const target = offset === 0 ? body.querySelector('[data-cur="1"]') : body.querySelector(`tr[data-day="${offset}"]`);
+    if (target) {
+      const rb = body.getBoundingClientRect();
+      const rt = target.getBoundingClientRect();
+      body.scrollTop += (rt.top - rb.top) - 36;
+    }
   }
-
   function setDay(day) {
     currentDay = day;
     $('tabToday').className = day === 'today' ? 'on' : '';
@@ -2061,6 +2072,25 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     $('refreshBtn').addEventListener('click', () => refresh(false));
     const hLabelsEl = document.querySelector('.hlabels');
     if (hLabelsEl) hLabelsEl.addEventListener('click', () => openHourly());
+    // スライドをスクロールして日をまたいだら、予報タブも連動して切り替える（スクロールが止まってから判定するので軽い）
+    const stripEl = $('hourlyStrip');
+    if (stripEl) {
+      let stripTimer = null;
+      stripEl.addEventListener('scroll', () => {
+        if (stripTimer) clearTimeout(stripTimer);
+        stripTimer = setTimeout(() => {
+          const sl = stripEl.scrollLeft;
+          const cols = stripEl.querySelectorAll('.hcol[data-day]');
+          for (const c of cols) {
+            if (c.offsetLeft + c.offsetWidth > sl + 4) {
+              const want = ['today', 'tomorrow', 'dayafter'][+c.dataset.day] || 'today';
+              if (want !== currentDay) setDay(want);
+              break;
+            }
+          }
+        }, 180);
+      }, { passive: true });
+    }
     // 画面に戻ってきたとき、前回の取得から30分以上たっていたら自動で取り直す（裏では動かない）
     let autoRefreshing = false;
     document.addEventListener('visibilitychange', async () => {
