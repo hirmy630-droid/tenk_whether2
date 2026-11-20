@@ -124,10 +124,10 @@
   .wx-maxline .mrow:first-child { margin-top: 0; }
   .wx-maxline .mx { white-space: nowrap; }
   .hwrap { display: flex; margin-top: 10px; }
-  .hlabels { flex: 0 0 auto; width: 46px; background: #f2f2f7; border-radius: 10px 0 0 10px; padding: 4px 0; }
-  .hlabels .hr, .hcol .hr { height: 26px; line-height: 26px; font-size: 16px; text-align: center; white-space: nowrap; overflow: hidden; }
+  .hlabels { flex: 0 0 auto; width: 46px; background: #f2f2f7; border-radius: 10px 0 0 10px; padding: 4px 0; cursor: pointer; }
+  .hlabels .hr, .hcol .hr { height: 23px; line-height: 23px; font-size: 16px; text-align: center; white-space: nowrap; overflow: hidden; }
   .hlabels .hr { font-size: 16px; color: #6b7280; font-weight: 600; }
-  .hlabels .hr-i, .hcol .hr-i { height: 30px; line-height: 30px; }
+  .hlabels .hr-i, .hcol .hr-i { height: 27px; line-height: 27px; }
   .hcol .hr-i { font-size: 18px; }
   .hcol .hr-t { font-weight: 700; }
   .hcol .hr-fl { color: #ff9500; }
@@ -2059,6 +2059,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       applyTheme(dark);
     });
     $('refreshBtn').addEventListener('click', () => refresh(false));
+    const hLabelsEl = document.querySelector('.hlabels');
+    if (hLabelsEl) hLabelsEl.addEventListener('click', () => openHourly());
     // 画面に戻ってきたとき、前回の取得から30分以上たっていたら自動で取り直す（裏では動かない）
     let autoRefreshing = false;
     document.addEventListener('visibilitychange', async () => {
