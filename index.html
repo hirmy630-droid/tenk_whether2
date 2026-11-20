@@ -1256,6 +1256,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   let locations = [];
   let selectedId = null;
   let currentDay = 'today'; // 'today' | 'tomorrow' | 'dayafter'
+  let stripKeepPos = false; // スライド連動でタブが切り替わった時は、スライドの位置を戻さず今の位置を保つ
   const DAY_OFFSET = { today: 0, tomorrow: 1, dayafter: 2 };
   const DAY_LABEL = { today: '今日', tomorrow: '明日', dayafter: '明後日' };
   let lastData = null; // { mrf, cards, hourly, week, placeName, fetchedAt }
@@ -1918,7 +1919,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 
   // 1時間毎ポップアップ
   // 横スクロールの1時間天気（v2でセルの代わりにカード内へ常設、左端に固定ラベル付き）
-  // どのタブでも今日0時〜明後日の終わりまでを通して表示し、開いているタブの位置へスクロールする。
+  // どのタブでも今日0時〜明後日の終わりまでを通して表示し、開いているタブの位置へスクロールする（ただしスライド連動でタブが切り替わった時は位置を保つ）。
   // 過ぎた時間は薄く表示。スクロールで日をまたいだら、予報タブも連動して切り替わる（init側のscroll監視）。
   function renderHourlyStrip() {
     const el = $('hourlyStrip');
@@ -1961,9 +1962,16 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr hr-hp">${pop != null ? `${pop}%` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div></div>`;
       first = false;
     });
+    const prevScroll = el.scrollLeft;
     el.innerHTML = html || '<p class="note">1時間予報を取得できませんでした。</p>';
-    const target = offset === 0 ? el.querySelector('[data-cur="1"]') : el.querySelector(`.hcol[data-day="${offset}"]`);
-    el.scrollLeft = target ? target.offsetLeft : 0;
+    if (stripKeepPos) {
+      // スライド操作でタブが切り替わった直後：見ていた位置のままにする（自動で戻さない）
+      stripKeepPos = false;
+      el.scrollLeft = prevScroll;
+    } else {
+      const target = offset === 0 ? el.querySelector('[data-cur="1"]') : el.querySelector(`.hcol[data-day="${offset}"]`);
+      el.scrollLeft = target ? target.offsetLeft : 0;
+    }
   }
 
   function openHourly() {
@@ -2084,7 +2092,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
           for (const c of cols) {
             if (c.offsetLeft + c.offsetWidth > sl + 4) {
               const want = ['today', 'tomorrow', 'dayafter'][+c.dataset.day] || 'today';
-              if (want !== currentDay) setDay(want);
+              if (want !== currentDay) { stripKeepPos = true; setDay(want); }
               break;
             }
           }
