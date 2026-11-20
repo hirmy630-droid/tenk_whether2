@@ -116,7 +116,6 @@
   .feels-strip .fk { font-weight: 700; color: #92400e; flex: 0 0 auto; }
   .feels-strip .fv { flex: 1; display: flex; justify-content: space-around; font-weight: 700; }
   .feels-strip .fv span b { color: #ff6a3a; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
   .cell { background: #f2f2f7; border-radius: 12px; padding: 3px 10px; text-align: center; }
   .wx-maxline { margin-top: 3px; font-size: 16px; font-weight: 700; text-align: center; }
   .wx-maxline .mk { font-size: 13px; color: #6b7280; font-weight: 600; margin-right: 3px; }
@@ -2178,6 +2177,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         ptrBar.textContent = '↓ 引っ張って更新';
       }
     });
+    // タッチが途中でキャンセルされたら（着信表示やシステム操作など）、引っ張り途中のバーを戻す
+    document.addEventListener('touchcancel', ptrReset);
     $('tabToday').addEventListener('click', () => setDay('today'));
     $('tabTomorrow').addEventListener('click', () => setDay('tomorrow'));
     $('tabDayAfter').addEventListener('click', () => setDay('dayafter'));
