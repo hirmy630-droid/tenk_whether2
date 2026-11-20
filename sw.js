@@ -1,5 +1,5 @@
 'use strict';
-const VERSION = '20261023-iphone-checked-02';
+const VERSION = '20261120-v2-01';
 const BASE = self.registration.scope;
 const PREFIX = 'weather-pwa-' + encodeURIComponent(BASE) + '-';
 const CACHE_NAME = PREFIX + VERSION;
