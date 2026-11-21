@@ -2206,9 +2206,9 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 <script>
-/* スワイプで今日/明日/明後日を切り替え（左スワイプ→次の日、右スワイプ→前の日） */
+/* スワイプで今日/明日/明後日を切り替え（左スワイプ→次の日、右スワイプ→前の日）。画面の一番下でも切り替えられるよう、判定範囲は予報カードだけでなく画面全体 */
 (function () {
-  var card = document.getElementById('wxCard');
+  var card = document.querySelector('.wrap');
   var tabs = [document.getElementById('tabToday'), document.getElementById('tabTomorrow'), document.getElementById('tabDayAfter')];
   if (!card || tabs.some(function (t) { return !t; })) return;
   var sx = 0, sy = 0, inStrip = false;
