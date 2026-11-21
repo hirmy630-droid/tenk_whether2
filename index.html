@@ -21,7 +21,7 @@
   }
   .wrap { max-width: 420px; margin: 0 auto; padding: 0 8px calc(18px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px; }
   header { text-align: center; margin-bottom: -5px; }
-  header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; line-height: 1.25; }
+  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; white-space: nowrap; line-height: 1.25; }
   header h1 .h-sub { font-size: 14px; color: #4b5563; font-weight: 500; margin-left: 6px; letter-spacing: 0.02em; }
   .card { background: #fff; border: 1px solid #e5e5ea; border-radius: 16px; padding: 12px 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
   .card h2 { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
@@ -1789,23 +1789,6 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     renderWeek();
     renderLocBtn();
     renderAlert();
-    if (openScrollPending) { openScrollPending = false; scrollToButtons(openScrollToken); }
-  }
-
-  // 開いた時は詰めずに、ボタン行（レーダー／更新／週間予報）が画面下端に来る位置まで自動でスクロールする
-  // 起動時と、画面に戻って自動更新した時だけ働く。ユーザーが触り始めたら取り消す
-  let openScrollPending = true;
-  let openScrollToken = 0;
-  function scrollToButtons(token) {
-    const apply = () => {
-      if (token !== openScrollToken) return;
-      const row = document.querySelector('.btn-row3');
-      if (!row) return;
-      const y = row.getBoundingClientRect().bottom + window.scrollY - window.innerHeight + 6;
-      if (y > 4) window.scrollTo(0, y);
-    };
-    requestAnimationFrame(apply);
-    setTimeout(apply, 350);
   }
 
   // 服装（表示中の日に連動。9時〜16時の平均体感温度で判定し、トップスとボトムスを表示）＋ 8時・14時・20時の体感温度
@@ -2112,8 +2095,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       applyTheme(dark);
     });
     $('refreshBtn').addEventListener('click', () => refresh(false));
-    // ユーザーが触り始めたら、開いた時の自動スクロールは取り消す
-    document.addEventListener('touchstart', () => { openScrollToken++; }, { passive: true });
+
     const hLabelsEl = document.querySelector('.hlabels');
     if (hLabelsEl) hLabelsEl.addEventListener('click', () => openHourly());
     // スライドをスクロールして日をまたいだら、予報タブも連動して切り替える（スクロールが止まってから判定するので軽い）
@@ -2145,7 +2127,6 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const last = (lastData && lastData.fetchedAt) || (cached && cached.fetchedAt) || 0;
       if (Date.now() - last < 30 * 60 * 1000) return;
       autoRefreshing = true;
-      openScrollPending = true;
       try { await refresh(false); } finally { autoRefreshing = false; }
     });
     // 一番上にいるときに下へ引っ張ると更新（プルリフレッシュ）。ポップアップ表示中は無効
