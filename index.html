@@ -154,10 +154,10 @@
   .feels-row > div + div { border-left: 1px solid #dec084; }
   .feels-row .fr-k { font-size: 15px; color: #92400e; font-weight: 700; }
   .feels-row .fr-v { font-size: 18px; font-weight: 700; color: #ff6a3a; margin-top: 2px; }
-  .om-row { display: flex; gap: 8px; padding: 8px 2px; border-bottom: 1px solid #eeeef2; align-items: center; }
-  .om-row:last-child { border-bottom: none; }
-  .om-k { flex: 0 0 68px; text-align: center; font-weight: 700; font-size: 14px; color: #4b5563; background: #eceef2; border-radius: 8px; padding: 4px 0; }
-  .om-v { flex: 1; font-size: 16px; line-height: 1.5; font-weight: 700; }
+  .of-grid { display: flex; gap: 8px; }
+  .of-col { flex: 1; border: 1px solid #eeeef2; border-radius: 10px; overflow: hidden; }
+  .of-h { text-align: center; font-weight: 700; font-size: 14px; color: #4b5563; background: #eceef2; padding: 4px 0; }
+  .of-v { font-size: 16px; line-height: 1.55; font-weight: 700; padding: 6px 10px; }
   #clothesTitle .judge-feel { color: #cc6600; margin-left: 8px; }
   .advice { border-radius: 12px; padding: 9px 12px; font-size: 15px; line-height: 1.5; margin-top: 8px; }
   .advice.rain { background: #eaf3ff; }
@@ -240,10 +240,6 @@
     background: #f2f2f7; border: none; width: 32px; height: 32px; border-radius: 50%;
     font-size: 15px; cursor: pointer; color: #4b5563;
   }
-  #radarFrame {
-    width: 100%; height: 62vh; height: 62dvh; border: none; border-radius: 12px;
-    background: #e8eef2; display: block;
-  }
   /* 表示モード切替（登録ポップアップ内） */
   .theme-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #e5e5ea; }
   .theme-row .theme-label { flex: 1; font-size: 14px; font-weight: 600; }
@@ -271,8 +267,8 @@
   body.dark .hcol .hr-fl { color: #cc6600; }
   body.dark .hcol .hr-hp, body.dark .hcol .rn { color: #007aff; }
   body.dark .cell .k { color: #aeaeb2; }
-  body.dark .om-row { border-bottom-color: #38383a; }
-  body.dark .om-k { color: #d1d1d6; background: #2c2c2e; }
+  body.dark .of-col { border-color: #38383a; }
+  body.dark .of-h { color: #d1d1d6; background: #2c2c2e; }
   body.dark #clothesTitle .judge-feel { color: #ff9f0a; }
   body.dark .advice.rain { background: #12283f; }
   body.dark .advice.ok { background: #14301c; }
@@ -299,7 +295,6 @@
   body.dark .loc-item .edit { color: #4da3ff; }
   body.dark .close-bottom-btn { background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 48%, rgba(0,0,0,0.18)), linear-gradient(180deg, #1d3a56, #12283f 55%, #0d1e30); border-color: #2c4d75; color: #4da3ff; box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.25); }
   body.dark .theme-row { border-top-color: #38383a; }
-  body.dark #radarFrame { background: #2c2c2e; }
   body.dark .week-row.tap:active { background: #2c2c2e; }
   body.dark .day-sumlabel { color: #aeaeb2; }
   body.dark .day-block { background: #2c2c2e; border-color: #48484a; }
@@ -430,15 +425,6 @@
     </div>
     </div>
     <button type="button" class="close-bottom-btn" data-close="locModal">閉じる</button>
-  </div>
-</div>
-
-<!-- ポップアップ：雨雲レーダー -->
-<div class="overlay hidden" id="radarModal">
-  <div class="sheet">
-    <div class="sheet-head"><h3>🌧️ 雨雲レーダー</h3><button type="button" class="sheet-close" data-close="radarModal">✕</button></div>
-    <iframe class="sheet-body" id="radarFrame" title="雨雲レーダー" loading="lazy"></iframe>
-    <button type="button" class="close-bottom-btn" data-close="radarModal">閉じる</button>
   </div>
 </div>
 
@@ -1459,8 +1445,6 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   }
   function closeModal(id) {
     $(id).classList.add('hidden');
-    // レーダーは閉じたら中身を破棄してメモリを空ける（次回開くときに最新を読み直す）
-    if (id === 'radarModal') $('radarFrame').src = 'about:blank';
   }
 
   function cacheKey(loc) { return `${loc.lat},${loc.lon}`; }
@@ -1814,9 +1798,11 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     }
     const o = workOutfitFor(judgeTemp(avg, wAvg));
     $('clothesTitle').innerHTML = `👕 ${DAY_LABEL[currentDay]}の服装<span class="judge-feel">${basisLbl} ${avg != null ? `${avg}℃` : '--℃'}</span>`;
+    const topsLines = o.tops.split('＋').map(t => `<div>${t}</div>`).join('');
+    const bottomsLines = o.bottoms.split('＋').map(t => `<div>${t}</div>`).join('');
     $('clothesBands').innerHTML =
-      `<div class="om-row"><span class="om-k">トップス</span><span class="om-v">${o.tops}</span></div>` +
-      `<div class="om-row"><span class="om-k">ボトムス</span><span class="om-v">${o.bottoms}</span></div>`;
+      `<div class="of-grid"><div class="of-col"><div class="of-h">トップス</div><div class="of-v">${topsLines}</div></div>` +
+      `<div class="of-col"><div class="of-h">ボトムス</div><div class="of-v">${bottomsLines}</div></div></div>`;
     const feels = [
       feelsAt(dayDate, 8, m.MINT, sun),
       feelsAt(dayDate, 14, m.MAXT, sun),
