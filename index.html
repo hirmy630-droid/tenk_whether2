@@ -400,6 +400,12 @@
     <div class="advice ok" id="umbrellaAdvice">傘の目安を計算中…</div>
   </section>
 
+  <div class="tabs">
+    <button type="button" id="tabTodayB" class="on">今日</button>
+    <button type="button" id="tabTomorrowB">明日</button>
+    <button type="button" id="tabDayAfterB">明後日</button>
+  </div>
+
 </div>
 
 <!-- ポップアップ：登録場所の選択・管理 -->
@@ -803,14 +809,14 @@ function feelsLike(temp, windSpd, wx, hour, sun, hum) {
 /* ---------- 服装判定 ---------- */
 function workOutfitFor(temp) {
   if (!Number.isFinite(temp)) return { tops: 'データなし', bottoms: '取得後に判定します' };
-  if (temp >= 31) return { tops: '空調服', bottoms: '夏ズボン' };
-  if (temp >= 25) return { tops: '半袖シャツ', bottoms: '夏ズボン' };
-  if (temp >= 21) return { tops: '長袖', bottoms: 'ズボン' };
-  if (temp >= 18) return { tops: '長袖＋ジャケット', bottoms: '冬ズボン' };
-  if (temp >= 15) return { tops: 'インナー＋長袖＋ジャケット', bottoms: 'インナー＋冬ズボン' };
-  if (temp >= 11) return { tops: '防寒インナー＋長袖＋軽防寒服', bottoms: 'インナー＋軽防寒ズボン' };
-  if (temp >= 6)  return { tops: '防寒インナー＋長袖シャツ＋ジャケット＋軽防寒服', bottoms: '防寒インナー＋軽防寒ズボン' };
-  return { tops: '防寒インナー＋長袖シャツ＋重防寒服', bottoms: '防寒インナー＋防寒ズボン' };
+  if (temp >= 31) return { tops: '空調服', bottoms: '夏ボトム' };
+  if (temp >= 25) return { tops: '夏半袖', bottoms: '夏ボトム' };
+  if (temp >= 21) return { tops: '長袖', bottoms: 'ボトム' };
+  if (temp >= 18) return { tops: '長袖＋上着', bottoms: '冬ボトム' };
+  if (temp >= 15) return { tops: '冬長袖＋冬上着', bottoms: 'インナー＋冬ボトム' };
+  if (temp >= 11) return { tops: 'インナー＋軽防寒長袖＋軽防寒上着', bottoms: 'インナー＋軽防寒ボトム' };
+  if (temp >= 6)  return { tops: '防寒インナー＋軽防寒長袖＋軽防寒上着', bottoms: '防寒インナー＋軽防寒ボトム' };
+  return { tops: '防寒インナー＋防寒長袖＋重防寒上着', bottoms: '防寒インナー＋重防寒ボトム' };
 }
 // 判定温度の風速補正：風速5m/s以上は-1℃、0.5m/s以下は+1℃
 function judgeTemp(feelsAvg, windAvg) {
@@ -2052,6 +2058,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     $('tabToday').className = day === 'today' ? 'on' : '';
     $('tabTomorrow').className = day === 'tomorrow' ? 'on' : '';
     $('tabDayAfter').className = day === 'dayafter' ? 'on' : '';
+    $('tabTodayB').className = day === 'today' ? 'on' : '';
+    $('tabTomorrowB').className = day === 'tomorrow' ? 'on' : '';
+    $('tabDayAfterB').className = day === 'dayafter' ? 'on' : '';
     render();
   }
 
@@ -2164,6 +2173,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     $('tabToday').addEventListener('click', () => setDay('today'));
     $('tabTomorrow').addEventListener('click', () => setDay('tomorrow'));
     $('tabDayAfter').addEventListener('click', () => setDay('dayafter'));
+    $('tabTodayB').addEventListener('click', () => setDay('today'));
+    $('tabTomorrowB').addEventListener('click', () => setDay('tomorrow'));
+    $('tabDayAfterB').addEventListener('click', () => setDay('dayafter'));
     refresh(true);
   });
 }
