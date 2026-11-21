@@ -361,9 +361,9 @@
         <div class="hr hr-i">天気</div>
         <div class="hr">気温</div>
         <div class="hr">体感</div>
+        <div class="hr">風速</div>
         <div class="hr">確率</div>
         <div class="hr">雨量</div>
-        <div class="hr">風速</div>
       </div>
       <div class="hstrip" id="hourlyStrip"></div>
     </div>
@@ -1968,7 +1968,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cur = ms === curMs ? ' data-cur="1"' : '';
       const past = ms < curMs ? ' past' : '';
-      html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr hr-hp">${pop != null ? `${pop}%` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div></div>`;
+      html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div><div class="hr hr-hp">${pop != null ? `${pop}%` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div></div>`;
       first = false;
     });
     const prevScroll = el.scrollLeft;
