@@ -159,6 +159,9 @@
   .of-h { text-align: center; font-weight: 700; font-size: 14px; color: #4b5563; background: #eceef2; padding: 4px 0; }
   .of-v { font-size: 16px; line-height: 1.55; font-weight: 700; padding: 6px 10px; text-align: center; }
   #clothesTitle .judge-feel { color: #cc6600; margin-left: 8px; }
+  /* 服装判定ポップアップのタップ対象 */
+  .now-strip { cursor: pointer; }
+  .feels-row > div { cursor: pointer; }
   .advice { border-radius: 12px; padding: 9px 12px; font-size: 15px; line-height: 1.5; margin-top: 8px; }
   .advice.rain { background: #eaf3ff; }
   .advice.ok { background: #eefbf0; }
@@ -317,7 +320,7 @@
 
   <!-- 予報 -->
   <section class="card" id="wxCard">
-    <div class="now-strip">
+    <div class="now-strip" id="nowStrip" title="タップで現在の服装判定">
       <div class="nw-row">
         <span class="nw-k">現在天気</span>
         <span class="nw-e" id="nowWx">--</span>
@@ -388,9 +391,9 @@
     <h2 class="of-title" id="clothesTitle">👕 明日の服装</h2>
     <div id="clothesBands"></div>
     <div class="feels-row" id="tmrFeelsRow">
-      <div><div class="fr-k">8時の体感</div><div class="fr-v" id="feel8">--℃</div></div>
-      <div><div class="fr-k">14時の体感</div><div class="fr-v" id="feel14">--℃</div></div>
-      <div><div class="fr-k">20時の体感</div><div class="fr-v" id="feel20">--℃</div></div>
+      <div id="feelBox8"><div class="fr-k">8時の体感</div><div class="fr-v" id="feel8">--℃</div></div>
+      <div id="feelBox14"><div class="fr-k">14時の体感</div><div class="fr-v" id="feel14">--℃</div></div>
+      <div id="feelBox20"><div class="fr-k">20時の体感</div><div class="fr-v" id="feel20">--℃</div></div>
     </div>
     <div class="advice ok" id="umbrellaAdvice">傘の目安を計算中…</div>
   </section>
@@ -434,6 +437,15 @@
     <div class="sheet-head"><h3 id="hourlyTitle">🕐 1時間毎の予報</h3><button type="button" class="sheet-close" data-close="hourlyModal">✕</button></div>
     <div class="sheet-body" id="hourlyBody"><p class="note">読み込み中…</p></div>
     <button type="button" class="close-bottom-btn" data-close="hourlyModal">閉じる</button>
+  </div>
+</div>
+
+<!-- ポップアップ：服装判定（体感タップ・現在天気タップ） -->
+<div class="overlay hidden" id="outfitModal">
+  <div class="sheet">
+    <div class="sheet-head"><h3 id="outfitTitle">👕 服装判定</h3><button type="button" class="sheet-close" data-close="outfitModal">✕</button></div>
+    <div class="sheet-body" id="outfitBody"><p class="note">読み込み中…</p></div>
+    <button type="button" class="close-bottom-btn" data-close="outfitModal">閉じる</button>
   </div>
 </div>
 
@@ -1264,6 +1276,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   let selectedId = null;
   let currentDay = 'today'; // 'today' | 'tomorrow' | 'dayafter'
   let stripKeepPos = false; // スライド連動でタブが切り替わった時は、スライドの位置を戻さず今の位置を保つ
+  let nowJudge = null; // 現在天気の表示値（体感・風速・気温）。現在天気タップの服装判定に使う
   const DAY_OFFSET = { today: 0, tomorrow: 1, dayafter: 2 };
   const DAY_LABEL = { today: '今日', tomorrow: '明日', dayafter: '明後日' };
   let lastData = null; // { mrf, cards, hourly, week, placeName, fetchedAt }
@@ -1717,13 +1730,17 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       $('nowRain').textContent = `降水量 ${obs.precLatest != null ? obs.precLatest : (row && row.rainMm != null ? row.rainMm : 0)}ミリ`;
       const oIcon = obs.windIcon ? `<img class="wicon" src="${obs.windIcon}" alt="" onerror="this.remove()">` : '';
       $('nowWind').innerHTML = `風速 ${oIcon}${obs.windSpd != null ? obs.windSpd : '--'}m/s`;
-      setFeels(feelsLike(obs.temp, obs.windSpd, obs.wx != null ? obs.wx : (row ? row.wx : null), row ? row.time : jstNow().getUTCHours(), sunM, row ? row.hum : undefined));
+      const fObs = feelsLike(obs.temp, obs.windSpd, obs.wx != null ? obs.wx : (row ? row.wx : null), row ? row.time : jstNow().getUTCHours(), sunM, row ? row.hum : undefined);
+      nowJudge = { feels: fObs, wind: obs.windSpd != null ? obs.windSpd : null, temp: obs.temp };
+      setFeels(fObs);
       return;
     }
     if (!row) return;
     $('nowWx').textContent = wxEmoji(row.wx);
     $('nowTemp').textContent = row.temp != null ? `${row.temp}℃` : '--℃';
-    setFeels(feelsLike(row.temp, row.windSpd, row.wx, row.time, sunM, row.hum));
+    const fRow = feelsLike(row.temp, row.windSpd, row.wx, row.time, sunM, row.hum);
+    nowJudge = { feels: fRow, wind: row.windSpd != null ? row.windSpd : null, temp: row.temp };
+    setFeels(fRow);
     $('nowRain').textContent = `降水量 ${row.rainMm != null ? row.rainMm : 0}ミリ`;
     const nDeg = windToDeg(row.windDir);
     const nArrow = nDeg != null && row.windSpd > 0 ? `<span class="wdir" style="transform:rotate(${nDeg}deg)">↑</span>` : '';
@@ -1819,6 +1836,38 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const ua = $('umbrellaAdvice');
     ua.className = 'advice ' + adv.cls;
     ua.textContent = adv.text;
+  }
+
+  // 服装判定ポップアップ（8時・14時・20時の体感タップ／現在天気タップ用）。追加の取得は無く、表示済みのデータだけで判定する
+  function outfitGridHtml(o) {
+    const topsLines = o.tops.split('＋').map(t => `<div>${t}</div>`).join('');
+    const bottomsLines = o.bottoms.split('＋').map(t => `<div>${t}</div>`).join('');
+    return `<div class="of-grid"><div class="of-col"><div class="of-h">トップス</div><div class="of-v">${topsLines}</div></div>` +
+      `<div class="of-col"><div class="of-h">ボトムス</div><div class="of-v">${bottomsLines}</div></div></div>`;
+  }
+  function openOutfitPopup(title, basisTxt, feels, wind) {
+    if (feels == null) return;
+    const o = workOutfitFor(judgeTemp(feels, wind));
+    $('outfitTitle').textContent = title;
+    $('outfitBody').innerHTML = `<p class="note" style="margin-bottom:10px;">${basisTxt}</p>` + outfitGridHtml(o);
+    openModal('outfitModal');
+  }
+  // 体感（8時・14時・20時）タップ：その時間の体感と風速で判定する
+  function openHourOutfit(hour) {
+    const e = dayEntry(DAY_OFFSET[currentDay] ?? 0) || dayEntry(0);
+    if (!e || !lastData) return;
+    const dayDate = dateOfEntry(e);
+    const sun = sunRange(e.mrf);
+    const r = hourlyRow(dayDate, hour);
+    const fb = hour === 8 ? e.mrf.MINT : hour === 14 ? e.mrf.MAXT : Math.round((e.mrf.MINT + e.mrf.MAXT) / 2);
+    const fl = feelsAt(dayDate, hour, fb, sun);
+    const wind = r && r.windSpd != null ? r.windSpd : null;
+    openOutfitPopup(`👕 ${hour}時の服装判定`, `${DAY_LABEL[currentDay]} ${hour}時の体感 ${fl != null ? `${fl}℃` : '--℃'}${wind != null ? `・風速 ${wind}m/s` : ''} で判定`, fl, wind);
+  }
+  // 現在天気タップ：現在の体感（帯に表示している実況ベースの値）で判定する
+  function openNowOutfit() {
+    if (!nowJudge || nowJudge.feels == null) return;
+    openOutfitPopup('👕 現在の服装判定', `現在の体感 ${nowJudge.feels}℃${nowJudge.wind != null ? `・風速 ${nowJudge.wind}m/s` : ''}${nowJudge.temp != null ? `（気温 ${nowJudge.temp}℃）` : ''} で判定`, nowJudge.feels, nowJudge.wind);
   }
 
   function renderNextRain() {
@@ -2069,6 +2118,11 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       });
     });
     $('locOpenBtn').addEventListener('click', () => openModal('locModal'));
+    // 服装判定ポップアップ：現在天気タップで現在の判定、8時・14時・20時の体感タップでその時間の判定
+    $('nowStrip').addEventListener('click', () => openNowOutfit());
+    $('feelBox8').addEventListener('click', () => openHourOutfit(8));
+    $('feelBox14').addEventListener('click', () => openHourOutfit(14));
+    $('feelBox20').addEventListener('click', () => openHourOutfit(20));
     $('weeklyBtn').addEventListener('click', () => openModal('weekModal'));
     $('radarBtn').addEventListener('click', updateRadarHref);
     document.querySelectorAll('[data-close]').forEach(btn => {
