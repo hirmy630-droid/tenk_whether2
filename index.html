@@ -267,11 +267,11 @@
   /* 服装判定ポップアップの背景は、1時間天気の帯と同じシルバーにする（ライト／ダークとも） */
   #outfitModal .sheet { background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); }
   body.dark #outfitModal .sheet { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); color: #1c1c1e; }
-  body.dark #outfitModal .of-col { border-color: #c9c9d1; }
-  body.dark #outfitModal .of-h { color: #4b5563; background: #e4e4ea; }
-  body.dark #outfitModal .note { color: #6b7280; }
   body.dark #outfitModal .sheet-close { background: #e4e4ea; color: #4b5563; }
-  body.dark #outfitModal .close-bottom-btn { background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0) 48%, rgba(0,60,140,0.06)), linear-gradient(180deg, #f4f9ff, #dbeafe 55%, #c3d9fb); border-color: #9db8dd; color: #007aff; box-shadow: 0 2px 5px rgba(0,60,140,0.18), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -2px 0 rgba(0,60,140,0.10); }
+  /* ポップアップ内の服装の枠は、シルバーの背景でもはっきり分かるように濃くする（ライト／ダーク共通） */
+  #outfitModal .of-col { border: 2px solid #8e8e99; background: rgba(255,255,255,0.45); }
+  #outfitModal .of-h { color: #3a3a3c; background: #d9d9e1; }
+  #outfitModal .note { color: #48484a; }
   body.dark .hcol { border-left-color: rgba(0,0,0,0.16); color: #1c1c1e; }
   body.dark .hcol.hday { background: rgba(0,0,0,0.13); color: #3a3a3c; }
   body.dark .hcol .rz { color: #5f5f66; }
