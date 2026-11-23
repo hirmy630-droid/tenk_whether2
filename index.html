@@ -229,7 +229,7 @@
     display: flex; align-items: flex-end; justify-content: center;
   }
   .sheet {
-    background: #fff; width: 100%; max-width: 420px; max-height: calc(100vh - env(safe-area-inset-top)); max-height: calc(100dvh - env(safe-area-inset-top)); overflow: hidden;
+    background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); width: 100%; max-width: 420px; max-height: calc(100vh - env(safe-area-inset-top)); max-height: calc(100dvh - env(safe-area-inset-top)); overflow: hidden;
     border-radius: 20px 20px 0 0; padding: 14px 16px calc(18px + env(safe-area-inset-bottom));
     animation: slideUp .22s ease-out;
     display: flex; flex-direction: column;
@@ -264,13 +264,11 @@
   body.dark .hlabels { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); }
   body.dark .hlabels .hr { color: #48484a; }
   body.dark .hstrip { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); }
-  /* 服装判定ポップアップの背景は、1時間天気の帯と同じシルバーにする（ライト／ダークとも） */
-  #outfitModal .sheet { background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); }
-  body.dark #outfitModal .sheet { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); color: #1c1c1e; }
-  body.dark #outfitModal .sheet-close { background: #e4e4ea; color: #4b5563; }
+  /* ポップアップ全般の背景は .sheet のシルバーで統一（1時間天気の帯と同じ） */
   /* ポップアップ内の服装の枠は、シルバーの背景でもはっきり分かるように濃くする（ライト／ダーク共通） */
   #outfitModal .of-col { border: 2px solid #8e8e99; background: rgba(255,255,255,0.45); }
   #outfitModal .of-h { color: #3a3a3c; background: #d9d9e1; }
+  body.dark #outfitModal .of-h { background: #c2c2cd; }
   #outfitModal .note { color: #48484a; }
   body.dark .hcol { border-left-color: rgba(0,0,0,0.16); color: #1c1c1e; }
   body.dark .hcol.hday { background: rgba(0,0,0,0.13); color: #3a3a3c; }
@@ -284,32 +282,33 @@
   body.dark .advice.rain { background: #12283f; }
   body.dark .advice.ok { background: #14301c; }
   body.dark .advice.warn { background: #33291a; }
-  body.dark table.mini th, body.dark table.mini td { border-bottom-color: #38383a; }
-  body.dark table.mini th { background: #1c1c1e; }
-  body.dark table.mini td.rz { color: #aeaeb2; }
-  body.dark .week-row { border-bottom-color: #38383a; }
-  body.dark .week-row.week-head { background: #1c1c1e; color: #aeaeb2; }
-  body.dark .week-row .pop { color: #4da3ff; }
+  body.dark table.mini th, body.dark table.mini td { border-bottom-color: #c9c9d1; }
+  body.dark table.mini th { background: #d9d9e1; color: #48484a; }
+  body.dark table.mini td.rz { color: #5f5f66; }
+  body.dark .week-row { border-bottom-color: #c9c9d1; }
+  body.dark .week-row.week-head { background: #d9d9e1; color: #3a3a3c; }
+  body.dark .week-row .pop { color: #007aff; }
   body.dark .note { color: #8e8e93; }
   body.dark .status-line { color: #aeaeb2; }
   body.dark .alert-banner.sev1 { background: #3a3114; border-color: #e6c34a; color: #f5d76e; }
   body.dark .alert-banner.sev2 { background: #3d1717; border-color: #ef5350; color: #ff9d97; }
   body.dark .alert-banner.sev3 { background: #2e1738; border-color: #8e24aa; color: #d7a8e8; }
-  body.dark .sheet { background: #1c1c1e; }
-  body.dark .sheet-head h3 .h-sub2 { color: #aeaeb2; }
-  body.dark .sheet-close { background: #2c2c2e; color: #d1d1d6; }
-  body.dark input[type="text"] { background: #2c2c2e; border-color: #48484a; color: #f2f2f7; }
-  body.dark .btn-gray { background: #2c2c2e; border-color: #48484a; color: #4da3ff; }
-  body.dark .loc-item { background: #2c2c2e; border-color: #38383a; }
-  body.dark .loc-item.selected { background: #12283f; border-color: #007aff; }
-  body.dark .loc-item .ad { color: #aeaeb2; }
-  body.dark .loc-item .edit { color: #4da3ff; }
+  body.dark .sheet { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); color: #1c1c1e; }
+  body.dark .sheet-head h3 .h-sub2 { color: #4b5563; }
+  body.dark .sheet-close { background: #e4e4ea; color: #4b5563; }
+  body.dark .sheet .note { color: #48484a; }
+  body.dark input[type="text"] { background: #f2f2f7; border-color: #d1d1d6; color: #1c1c1e; }
+  body.dark .btn-gray { background: #f2f2f7; border-color: #d1d1d6; color: #007aff; }
+  body.dark .loc-item { background: #f2f2f7; border-color: #e5e5ea; }
+  body.dark .loc-item.selected { background: #eaf3ff; border-color: #007aff; }
+  body.dark .loc-item .ad { color: #6b7280; }
+  body.dark .loc-item .edit { color: #007aff; }
   body.dark .close-bottom-btn { background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 48%, rgba(0,0,0,0.18)), linear-gradient(180deg, #1d3a56, #12283f 55%, #0d1e30); border-color: #2c4d75; color: #4da3ff; box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.25); }
-  body.dark .theme-row { border-top-color: #38383a; }
-  body.dark .week-row.tap:active { background: #2c2c2e; }
-  body.dark .day-sumlabel { color: #aeaeb2; }
-  body.dark .day-block { background: #2c2c2e; border-color: #48484a; }
-  body.dark .day-block .db-t { color: #e5e5ea; }
+  body.dark .theme-row { border-top-color: #c9c9d1; }
+  body.dark .week-row.tap:active { background: rgba(0,0,0,0.06); }
+  body.dark .day-sumlabel { color: #4b5563; }
+  body.dark .day-block { background: #ffffff; border-color: #d1d1d6; }
+  body.dark .day-block .db-t { color: #374151; }
   body.dark .day-block .db-temp { color: #aeaeb2; }
   body.dark .day-block .db-wind { color: #aeaeb2; }
   body.dark .day-closebtn { background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 48%, rgba(0,0,0,0.18)), linear-gradient(180deg, #1d3a56, #12283f 55%, #0d1e30); border-color: #2c4d75; color: #4da3ff; box-shadow: 0 2px 5px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 0 rgba(0,0,0,0.25); }
