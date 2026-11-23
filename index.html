@@ -169,7 +169,7 @@
   .nextrain { font-size: 15px; line-height: 1.55; }
   .nextrain .big { font-size: 16px; font-weight: 700; }
   table.mini { width: 100%; border-collapse: collapse; font-size: 15px; }
-  table.mini th, table.mini td { padding: 4px; text-align: center; border-bottom: 1px solid #eeeef2; }
+  table.mini th, table.mini td { padding: 4px; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.20); }
   table.mini th { color: #6b7280; font-weight: 600; position: sticky; top: 0; background: #d9d9e1; z-index: 1; }
   table.mini td { font-size: 16px; }
   table.mini td.day-sep { background: rgba(120,120,128,.14); font-weight: 700; text-align: left; padding-left: 8px; }
@@ -183,7 +183,7 @@
   a#radarBtn { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
   .close-bottom-btn { display: block; width: 100%; margin: 16px 0 2px; padding: 13px; font-size: 16px; font-weight: 700; color: #007aff; background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0) 48%, rgba(0,60,140,0.06)), linear-gradient(180deg, #f4f9ff, #dbeafe 55%, #c3d9fb); border: 1px solid #9db8dd; border-radius: 12px; cursor: pointer; box-shadow: 0 2px 5px rgba(0,60,140,0.18), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -2px 0 rgba(0,60,140,0.10); transition: transform .08s ease, box-shadow .08s ease; }
   .close-bottom-btn:active { transform: translateY(1px); box-shadow: 0 1px 2px rgba(0,60,140,0.18), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,60,140,0.10); }
-  .week-row { display: grid; grid-template-columns: 52px 32px 1fr 52px 58px; align-items: center; gap: 6px; padding: 6px 2px; border-bottom: 1px solid #eeeef2; font-size: 16px; }
+  .week-row { display: grid; grid-template-columns: 52px 32px 1fr 52px 58px; align-items: center; gap: 6px; padding: 6px 2px; border-bottom: 1px solid rgba(0,0,0,0.20); font-size: 16px; }
   .week-row:last-child { border-bottom: none; }
   .week-row.week-head { color: #6b7280; font-weight: 600; position: sticky; top: 0; background: #d9d9e1; z-index: 1; }
   .week-row.week-head span { text-align: center; }
@@ -284,10 +284,10 @@
   body.dark .advice.rain { background: #12283f; }
   body.dark .advice.ok { background: #14301c; }
   body.dark .advice.warn { background: #33291a; }
-  body.dark table.mini th, body.dark table.mini td { border-bottom-color: #c9c9d1; }
+  body.dark table.mini th, body.dark table.mini td { border-bottom-color: rgba(0,0,0,0.20); }
   body.dark table.mini th { background: #d9d9e1; color: #48484a; }
   body.dark table.mini td.rz { color: #5f5f66; }
-  body.dark .week-row { border-bottom-color: #c9c9d1; }
+  body.dark .week-row { border-bottom-color: rgba(0,0,0,0.20); }
   body.dark .week-row.week-head { background: #d9d9e1; color: #3a3a3c; }
   body.dark .week-row .pop { color: #007aff; }
   body.dark .note { color: #8e8e93; }
