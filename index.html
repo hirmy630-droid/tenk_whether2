@@ -123,7 +123,7 @@
   .wx-maxline .mrow:first-child { margin-top: 0; }
   .wx-maxline .mx { white-space: nowrap; }
   .hwrap { display: flex; margin-top: 10px; }
-  .hlabels { flex: 0 0 auto; width: 46px; background: #f2f2f7; border-radius: 10px 0 0 10px; padding: 4px 0; cursor: pointer; }
+  .hlabels { flex: 0 0 auto; width: 46px; background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); border-radius: 10px 0 0 10px; padding: 4px 0; cursor: pointer; }
   .hlabels .hr, .hcol .hr { height: 24px; line-height: 24px; font-size: 16px; text-align: center; white-space: nowrap; overflow: hidden; }
   .hlabels .hr { font-size: 16px; color: #6b7280; font-weight: 600; }
   .hlabels .hr-i, .hcol .hr-i { height: 28px; line-height: 28px; }
@@ -133,7 +133,7 @@
   .hcol .hr-hp { color: #007aff; }
   .hcol .rn { color: #007aff; font-weight: 700; }
   .hcol .rz { color: #8e8e93; }
-  .hstrip { flex: 1 1 auto; display: flex; overflow-x: auto; background: #f2f2f7; border-radius: 0 10px 10px 0; padding: 4px 0; position: relative; -webkit-overflow-scrolling: touch; }
+  .hstrip { flex: 1 1 auto; display: flex; overflow-x: auto; background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); border-radius: 0 10px 10px 0; padding: 4px 0; position: relative; -webkit-overflow-scrolling: touch; }
   .hcol { flex: 0 0 auto; width: 46px; border-left: 1px solid rgba(120,120,128,0.22); }
   .hcol.past { opacity: .45; }
   .hcol.first { border-left: none; }
@@ -264,6 +264,14 @@
   body.dark .hlabels { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); }
   body.dark .hlabels .hr { color: #48484a; }
   body.dark .hstrip { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); }
+  /* 服装判定ポップアップの背景は、1時間天気の帯と同じシルバーにする（ライト／ダークとも） */
+  #outfitModal .sheet { background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); }
+  body.dark #outfitModal .sheet { background: linear-gradient(180deg, #ededf2 0%, #cfcfd6 55%, #aeaeb6 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.85), inset 0 -1px 0 rgba(0,0,0,0.12); color: #1c1c1e; }
+  body.dark #outfitModal .of-col { border-color: #c9c9d1; }
+  body.dark #outfitModal .of-h { color: #4b5563; background: #e4e4ea; }
+  body.dark #outfitModal .note { color: #6b7280; }
+  body.dark #outfitModal .sheet-close { background: #e4e4ea; color: #4b5563; }
+  body.dark #outfitModal .close-bottom-btn { background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0) 48%, rgba(0,60,140,0.06)), linear-gradient(180deg, #f4f9ff, #dbeafe 55%, #c3d9fb); border-color: #9db8dd; color: #007aff; box-shadow: 0 2px 5px rgba(0,60,140,0.18), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -2px 0 rgba(0,60,140,0.10); }
   body.dark .hcol { border-left-color: rgba(0,0,0,0.16); color: #1c1c1e; }
   body.dark .hcol.hday { background: rgba(0,0,0,0.13); color: #3a3a3c; }
   body.dark .hcol .rz { color: #5f5f66; }
