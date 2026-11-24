@@ -130,7 +130,9 @@
   .hcol .hr-i { font-size: 18px; }
   .hcol .hr-t { font-weight: 700; }
   .hcol .hr-fl { color: #cc6600; }
-  .hcol .wdir { display: inline-block; }
+  .wdi { display: inline-block; line-height: 0; vertical-align: middle; }
+  .wdi svg { display: block; }
+  table.mini .wdi { margin-right: 2px; }
   .hcol .rn { color: #007aff; font-weight: 700; }
   .hcol .rz { color: #8e8e93; }
   .hstrip { flex: 1 1 auto; display: flex; overflow-x: auto; background: linear-gradient(180deg, #f6f6f9 0%, #dedee4 55%, #c0c0c9 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.10); border-radius: 0 10px 10px 0; padding: 4px 0; position: relative; -webkit-overflow-scrolling: touch; }
@@ -1141,6 +1143,14 @@ function windToDeg(code) {
   return ((code % 16) * 22.5 + 180) % 360;
 }
 
+// 風向アイコン（帯と1時間ポップアップ用）: 丸いバッジ＋風が吹いていく向きを指す突起。色は風速で変わる
+function windDirIcon(dir, spd, size = 18, blank = '--') {
+  const deg = windToDeg(dir);
+  if (deg == null || !(spd > 0)) return blank;
+  const col = spd >= 10 ? '#ff3b30' : spd >= 8 ? '#ff9500' : spd >= 5 ? '#007aff' : spd >= 3 ? '#5ac8fa' : '#8e8e93';
+  return `<span class="wdi" style="transform:rotate(${deg}deg)"><svg width="${size}" height="${size}" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="11.5" r="6.5" fill="${col}"/><path d="M10 0.5 L13.4 7.2 L6.6 7.2 Z" fill="${col}"/></svg></span>`;
+}
+
 // 9時〜16時の風速の平均（m/s、服装判定の補正用）。取れない場合はその日の全時間で代替
 function daytimeWindAvg(hourly, dateObj) {
   if (!hourly || !hourly.length) return null;
@@ -2076,8 +2086,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cur = ms === curMs ? ' data-cur="1"' : '';
       const past = ms < curMs ? ' past' : '';
-      const dDeg = windToDeg(r.windDir);
-      const dirHtml = dDeg != null && r.windSpd > 0 ? `<span class="wdir" style="transform:rotate(${dDeg}deg)">↑</span>` : '--';
+      const dirHtml = windDirIcon(r.windDir, r.windSpd);
       html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr">${dirHtml}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div></div>`;
       first = false;
     });
@@ -2131,7 +2140,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const pop = lastData.popMap ? lastData.popMap[omKey(r.date, r.time)] : null;
       const prc = lastData.precipMap ? lastData.precipMap[omKey(r.date, r.time)] : null;
       const rCls = rv != null && (rv >= 1 || (pop != null && pop >= 40 && prc != null && prc >= 0.3)) ? 'rn' : 'rz';
-      const wI = r.windImg && r.windSpd > 0 ? `<img class="wicon-t" src="https://gvs.weathernews.jp/onebox/img/wind/png/${r.windImg}" alt="" onerror="this.remove()">` : '';
+      const wI = windDirIcon(r.windDir, r.windSpd, 18, '');
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cls = ms < curMs ? ' class="past"' : '';
       const cur = ms === curMs ? ' data-cur="1"' : '';
@@ -2283,7 +2292,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
 
 /* Node等での検証用エクスポート */
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { parseDayCards, parseHourly, parseWeek, parseObserved, parsePlaceName, parseOmPop, correctPopMap, popTargets, popShapeRain, parseOmHum, parseOmWind, parseOmTemp, parseOmWindH, sixHourBlocks, omKey, windDirLabel, workOutfitFor, judgeTemp, isNorthWind, daytimeWindNorth, periodWindNorth, umbrellaAdvice, wxText, wxEmoji, feelsLike, humidityCorrection, findNextRain, daytimeFeelsAvg, daytimeWindAvg, nightPeriod, displayNightPeriod, periodFeelsAvg, periodWindAvg, dayWindMax, dayWindMaxInfo, dayRainMax, windToDeg, dateFromMrfTm, resolveJmaArea, parseJmaWarnings, strongRainNote, jmaWarnSeverity };
+  module.exports = { parseDayCards, parseHourly, parseWeek, parseObserved, parsePlaceName, parseOmPop, correctPopMap, popTargets, popShapeRain, parseOmHum, parseOmWind, parseOmTemp, parseOmWindH, sixHourBlocks, omKey, windDirLabel, windDirIcon, workOutfitFor, judgeTemp, isNorthWind, daytimeWindNorth, periodWindNorth, umbrellaAdvice, wxText, wxEmoji, feelsLike, humidityCorrection, findNextRain, daytimeFeelsAvg, daytimeWindAvg, nightPeriod, displayNightPeriod, periodFeelsAvg, periodWindAvg, dayWindMax, dayWindMaxInfo, dayRainMax, windToDeg, dateFromMrfTm, resolveJmaArea, parseJmaWarnings, strongRainNote, jmaWarnSeverity };
 }
 </script>
 <script>
