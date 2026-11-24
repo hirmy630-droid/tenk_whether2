@@ -179,6 +179,7 @@
   #hourlyModal table.mini th { font-size: 17px; }
   #hourlyModal table.mini td { font-size: 18px; }
   #hourlyModal table.mini td.pp { color: #007aff; }
+  #hourlyModal table.mini td.ws { white-space: nowrap; }
   #hourlyModal table.mini tr.past td { opacity: .45; }
   /* 1時間・週間ポップアップの行は立体表示にせず、区切りの線だけにする（hirmy 指示 2026-11-24） */
   table.mini td.fl { color: #ff9500; }
@@ -2164,13 +2165,12 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       openModal('hourlyModal');
       return;
     }
-    let html = '<table class="mini"><tr><th>時</th><th>天気</th><th>気温</th><th>体感</th><th>風速</th><th>雨量</th><th>確率</th></tr>';
+    let html = '<table class="mini"><tr><th>時</th><th>天気</th><th>気温</th><th>風速</th><th>雨量</th><th>確率</th></tr>';
     let prevDay = null;
     rows.forEach(r => {
       const diff = Math.round((new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate()) - new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate())) / 86400000);
-      if (prevDay && !sameDay(r.date, prevDay)) { const dl = `${r.date.getMonth() + 1}月${r.date.getDate()}日（${'日月火水木金土'[r.date.getDay()]}）`; const nm = diff === 1 ? '明日 ' : diff === 2 ? '明後日 ' : ''; html += `<tr><td colspan="7" class="day-sep">${nm}${dl}</td></tr>`; }
+      if (prevDay && !sameDay(r.date, prevDay)) { const dl = `${r.date.getMonth() + 1}月${r.date.getDate()}日（${'日月火水木金土'[r.date.getDay()]}）`; const nm = diff === 1 ? '明日 ' : diff === 2 ? '明後日 ' : ''; html += `<tr><td colspan="6" class="day-sep">${nm}${dl}</td></tr>`; }
       prevDay = r.date;
-      const fl = r.temp != null ? feelsLike(r.temp, r.windSpd, r.wx, r.time, sunRange(entryFor(r.date).mrf), r.hum) : null;
       const rv = r.rainMm;
       const pop = lastData.popMap ? lastData.popMap[omKey(r.date, r.time)] : null;
       const prc = lastData.precipMap ? lastData.precipMap[omKey(r.date, r.time)] : null;
@@ -2181,7 +2181,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cls = ms < curMs ? ' class="past"' : '';
       const cur = ms === curMs ? ' data-cur="1"' : '';
-      html += `<tr data-day="${diff}"${cls}${cur}><td>${r.time}時</td><td>${wxEmoji(r.wx)}</td><td>${r.temp ?? '--'}</td><td class="fl">${fl ?? '--'}</td><td>${wI}${r.windSpd != null ? `${r.windSpd}m` : '--'}</td><td class="${rCls}">${rv != null ? `${rv}㎜` : '―'}</td><td class="pp">${pop != null ? `${pop}%` : '--'}</td></tr>`;
+      html += `<tr data-day="${diff}"${cls}${cur}><td>${r.time}時</td><td>${wxEmoji(r.wx)}</td><td>${r.temp ?? '--'}</td><td class="ws">${wI}${r.windSpd != null ? `${r.windSpd}m` : '--'}</td><td class="${rCls}">${rv != null ? `${rv}㎜` : '―'}</td><td class="pp">${pop != null ? `${pop}%` : '--'}</td></tr>`;
     });
     html += '</table>';
     $('hourlyBody').innerHTML = html;
