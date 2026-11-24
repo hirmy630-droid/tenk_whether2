@@ -825,10 +825,10 @@ function workOutfitFor(temp) {
   if (temp >= 6)  return { tops: '防寒インナー＋軽防寒長袖＋軽防寒上着', bottoms: '防寒インナー＋軽防寒ボトム' };
   return { tops: '防寒インナー＋防寒長袖＋重防寒上着', bottoms: '防寒インナー＋重防寒ボトム' };
 }
-// 判定温度の風速補正（2026-11-24 風向も考慮に変更）：
+// 判定温度の風速補正（2026-11-24 風向も考慮に変更、同日に0.5m/s以下の+1℃は削除）：
 //   平均風速10m/s以上：北が入っている風は-2℃、それ以外は-1℃
 //   平均風速5m/s以上：北が入っている風は-1℃、それ以外は補正なし
-//   平均風速0.5m/s以下：+1℃
+//   平均風速5m/s未満：補正なし
 //   北かどうかは north で渡す（時間帯の判定では、一番強い風の時間の風向で決める）
 function judgeTemp(feelsAvg, windAvg, north) {
   if (!Number.isFinite(feelsAvg)) return null;
@@ -836,7 +836,6 @@ function judgeTemp(feelsAvg, windAvg, north) {
   if (Number.isFinite(windAvg)) {
     if (windAvg >= 10) t -= north ? 2 : 1;
     else if (windAvg >= 5) t -= north ? 1 : 0;
-    else if (windAvg <= 0.5) t += 1;
   }
   return t;
 }
