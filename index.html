@@ -130,6 +130,7 @@
   .hcol .hr-i { font-size: 18px; }
   .hcol .hr-t { font-weight: 700; }
   .hcol .hr-fl { color: #cc6600; }
+  .hcol .wicon-s { width: 20px; height: 20px; vertical-align: middle; }
   .wdi { display: inline-block; line-height: 0; vertical-align: middle; }
   .wdi svg { display: block; }
   table.mini .wdi { margin-right: 2px; }
@@ -1144,6 +1145,7 @@ function windToDeg(code) {
 }
 
 // 風向アイコン（帯と1時間ポップアップ用）: 丸いバッジ＋風が吹いていく向きを指す突起。色は風速で変わる
+// 帯とポップアップではウェザーニュースの風アイコン画像が本体で、これは画像が読めない時の予備表示
 function windDirIcon(dir, spd, size = 18, blank = '--') {
   const deg = windToDeg(dir);
   if (deg == null || !(spd > 0)) return blank;
@@ -2086,7 +2088,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cur = ms === curMs ? ' data-cur="1"' : '';
       const past = ms < curMs ? ' past' : '';
-      const dirHtml = windDirIcon(r.windDir, r.windSpd);
+      const dirHtml = r.windImg && r.windSpd > 0
+        ? `${windDirIcon(r.windDir, r.windSpd)}<img class="wicon-s" src="https://gvs.weathernews.jp/onebox/img/wind/png/${r.windImg}" alt="" onload="var p=this.previousElementSibling;if(p)p.style.display='none'" onerror="this.remove()">`
+        : windDirIcon(r.windDir, r.windSpd);
       html += `<div class="hcol${first ? ' first' : ''}${past}" data-day="${diff}"${cur}><div class="hr hr-t">${r.time}時</div><div class="hr hr-i">${wxEmoji(r.wx)}</div><div class="hr">${r.temp != null ? `${r.temp}℃` : '--'}</div><div class="hr hr-fl">${fl != null ? `${fl}℃` : '--'}</div><div class="hr">${dirHtml}</div><div class="hr">${r.windSpd != null ? `${r.windSpd}m` : '--'}</div><div class="hr ${rCls}">${rv != null ? `${rv}㎜` : '―'}</div></div>`;
       first = false;
     });
@@ -2140,7 +2144,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       const pop = lastData.popMap ? lastData.popMap[omKey(r.date, r.time)] : null;
       const prc = lastData.precipMap ? lastData.precipMap[omKey(r.date, r.time)] : null;
       const rCls = rv != null && (rv >= 1 || (pop != null && pop >= 40 && prc != null && prc >= 0.3)) ? 'rn' : 'rz';
-      const wI = windDirIcon(r.windDir, r.windSpd, 18, '');
+      const wI = r.windImg && r.windSpd > 0
+        ? `${windDirIcon(r.windDir, r.windSpd, 18, '')}<img class="wicon-t" src="https://gvs.weathernews.jp/onebox/img/wind/png/${r.windImg}" alt="" onload="var p=this.previousElementSibling;if(p)p.style.display='none'" onerror="this.remove()">`
+        : windDirIcon(r.windDir, r.windSpd, 18, '');
       const ms = new Date(r.date.getFullYear(), r.date.getMonth(), r.date.getDate(), r.time).getTime();
       const cls = ms < curMs ? ' class="past"' : '';
       const cur = ms === curMs ? ' data-cur="1"' : '';
