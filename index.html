@@ -1699,13 +1699,9 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         setStatus('取得に失敗しました。通信環境を確認して「最新の予報に更新」を押してください', true);
       }
     }
-    // ウィジェットから #week / #radar 付きで開かれた場合だけ、読み込み後に1回だけ自動で開く
+    // ウィジェットから #week / #hourly 付きで開かれた場合だけ、読み込み後に1回だけ自動で開く
     if (!hashActionDone && location.hash === '#week') { hashActionDone = true; openModal('weekModal'); }
-    else if (!hashActionDone && location.hash === '#radar') {
-      hashActionDone = true;
-      const url = `https://weather.yahoo.co.jp/weather/zoomradar/?lat=${loc.lat}&lon=${loc.lon}&z=10`;
-      if (!window.open(url, '_blank')) location.href = url; // 別画面で開けない場合は同じタブで開く
-    }
+    else if (!hashActionDone && location.hash === '#hourly') { hashActionDone = true; openHourly(); }
   }
 
   function dayEntry(offset) { // offset: 0=today, 1=tomorrow (MRF配列の並び), 2=dayafter（合成）
