@@ -1642,6 +1642,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     });
   }
 
+  let weekHashOpened = false;
   async function refresh(useCacheFirst) {
     const loc = selectedLoc();
     if (!loc) { setStatus('地点が登録されていません', true); return; }
@@ -1698,6 +1699,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         setStatus('取得に失敗しました。通信環境を確認して「最新の予報に更新」を押してください', true);
       }
     }
+    // 4日間ウィジェットから #week 付きで開かれた場合だけ、読み込み後に週間予報を自動で開く（1回だけ）
+    if (!weekHashOpened && location.hash === '#week') { weekHashOpened = true; openModal('weekModal'); }
   }
 
   function dayEntry(offset) { // offset: 0=today, 1=tomorrow (MRF配列の並び), 2=dayafter（合成）
