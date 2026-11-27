@@ -400,7 +400,7 @@
 
   <!-- つぎの雨予報 -->
   <section class="card">
-    <h2>🌧️ つぎの雨予報</h2>
+    <h2>☂️ つぎの雨予報</h2>
     <div class="nextrain" id="nextRain"><p class="note">予報を取得すると表示します。</p></div>
   </section>
 
@@ -741,7 +741,7 @@ function wxEmoji(code) {
   const h = Math.floor(c / 100);
   if (h === 1) return (c === 100) ? '☀️' : '🌤️';
   if (h === 2) return '☁️';
-  if (h === 3) return '🌧️';
+  if (h === 3) return '☂️';
   if (h === 4) return '🌨️';
   return '🌤️';
 }
